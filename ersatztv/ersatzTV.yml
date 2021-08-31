@@ -1,0 +1,11 @@
+version: "3.4"
+services:
+    ersatztv:
+      container_name: ersatztv
+      image: jasongdove/ersatztv
+      restart: unless-stopped
+      volumes:
+        - /home/littlediobolic/ersatzTV/config:/root/.local/share/ersatztv # config files
+        - /mnt/Plex:/media:ro
+      ports:
+        - 8409:8409

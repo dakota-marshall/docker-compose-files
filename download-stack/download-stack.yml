@@ -1,0 +1,186 @@
+version: "3.4"
+services:
+  #vpn:
+  #  container_name: vpn
+  #  image: dperson/openvpn-client:latest
+  #  cap_add:
+  #    - net_admin # required to modify network interfaces
+  #  restart: unless-stopped
+  #  volumes:
+  #    - /dev/net:/dev/net:z # tun device
+  #    - ${ROOT}/config/vpn:/vpn # OpenVPN configuration
+  #  security_opt:
+  #    - label:disable
+  #  ports:
+  #    - 8112:8112 # port for deluge web UI to be reachable from local network
+  #    - 58846:58846
+  #  command: '-r 192.168.1.0/24' # enable firewall and route local network traffic
+  #  dns: 1.1.1.1
+  #deluge:
+  #  container_name: deluge
+  #  image: linuxserver/deluge:latest
+  #  restart: unless-stopped
+  #  network_mode: service:vpn # run on the vpn network
+  #  environment:
+  #    - PUID=${PUID} # default user id, defined in .env
+  #    - PGID=${PGID} # default group id, defined in .env
+  #    - TZ=${TZ} # timezone, defined in .env
+  #  volumes:
+  #    - ${PLEX}/unfinished-downloads:/unfinished-downloads # unfinished downloads folder
+  #    - ${PLEX}/finished-downloads:/finished-downloads # downloads folder
+  #    - ${ROOT}/config/deluge:/config # config files
+
+  jackett:
+    container_name: jackett
+    image: linuxserver/jackett:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/downloads/torrent-blackhole:/downloads # place where to put .torrent files for manual download
+      - ${ROOT}/config/jackett:/config # config files
+
+  # # nzbget:
+  # #   container_name: nzbget
+  # #   image: linuxserver/nzbget:latest
+  # #   restart: unless-stopped
+  # #   network_mode: host
+  # #   environment:
+  # #     - PUID=${PUID} # default user id, defined in .env
+  # #     - PGID=${PGID} # default group id, defined in .env
+  # #     - TZ=${TZ} # timezone, defined in .env
+  # #   volumes:
+  # #     - ${ROOT}/downloads:/downloads # download folder
+  # #     - ${ROOT}/config/nzbget:/config # config files
+
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/sonarr:/config # config files
+      - ${PLEX}/TVShows:/tv # tv shows folder
+      - ${PLEX}/finished-downloads:/finished-downloads # download folder
+      - ${PLEX}/unfinished-downloads:/unfinished-downloads # unfinished downloads folder
+
+  radarr:
+    container_name: radarr
+    image: linuxserver/radarr:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/radarr:/config # config files
+      - ${PLEX}/Movies:/movies # movies folder
+      - ${PLEX}/finished-downloads:/downloads # download folder
+      - ${PLEX}/unfinished-downloads:/unfinished-downloads # unfinished downloads folder
+
+  ombi:
+    container_name: ombi
+    image: linuxserver/ombi:v4-preview
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/ombi:/config
+      - ${PLEX}/Movies:/movies # movies folder
+      - ${PLEX}/TVShows:/tv # tv shows folder
+      - ${PLEX}/finished-downloads:/downloads # download folder
+      - ${PLEX}/unfinished-downloads:/unfinished-downloads # unfinished downloads folder
+    ports:
+      - 3579:3579
+
+  lidarr:
+    container_name: lidarr
+    image: linuxserver/lidarr
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/lidarr:/config
+      - ${PLEX}/Music:/music
+      - ${PLEX}/finished-downloads:/downloads # download folder
+      - ${PLEX}/unfinished-downloads:/unfinished-downloads # unfinished downloads folder
+    ports:
+      - 8686:8686
+
+
+  # plex-server:
+  #   container_name: plex-server
+  #   image: plexinc/pms-docker:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - TZ=${TZ} # timezone, defined in .env
+  #   network_mode: host
+  #   volumes:
+  #     - ${ROOT}/config/plex/db:/config # plex database
+  #     - ${ROOT}/config/plex/transcode:/transcode # temp transcoded files
+  #     - ${ROOT}/complete:/data # media library
+
+  bazarr:
+    container_name: bazarr
+    image: linuxserver/bazarr
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+      - UMASK_SET=022 #optional
+    volumes:
+      - ${ROOT}/config/bazarr:/config # config files
+      - ${PLEX}/Movies:/movies # movies folder
+      - ${PLEX}/TVShows:/tv # tv shows folder
+    ports:
+      - 6767:6767
+
+  movie-match:
+    container_name: movie-match
+    image: lukechannings/moviematch
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PLEX_URL=http://10.0.0.110:32400
+      - PORT=6666
+      - LIBRARY_FILTER=Movies,TV Shows
+    env_file:
+      - mm-secret.env
+    volumes:
+      - ${ROOT}/config:/config
+    ports:
+      - 6666:6666
+
+  tautulli:
+    container_name: tautulli
+    image: tautulli/tautulli
+    restart: unless-stopped
+    volumes:
+      - ${ROOT}/config/tautulli:/config
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ}
+    ports:
+      - 8181:8181

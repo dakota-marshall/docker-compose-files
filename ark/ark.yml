@@ -1,0 +1,65 @@
+version: "3.4"
+services:
+  ark:
+    container_name: ark
+    image: motey/arkserver
+    restart: unless-stopped
+    volumes:
+      - /home/littlediobolic/ark:/ark
+      - /home/littlediobolic/ark-cluster:/cluster
+    ports:
+      - 7777:7777
+      - 7777:7777/udp
+      - 7778:7778
+      - 7778:7778/udp
+      - 27015:27015
+      - 27015:27015/udp
+      - 32330:32330
+    environment:
+      STEAMPORT: 7778
+      SERVERPORT: 27015
+      SESSIONNAME: stank-server-island
+      AUTOUPDATE: 120
+      AUTOBACKUP: 60
+      WARNMINUTE: 30
+      SERVERMAP: "TheIsland"
+      BACKUPONSTOP: 1
+      WARNONSTOP: 1
+      TZ: America/New_York
+      NBPLAYERS: 12
+      BRANCH: "master"
+    env_file:
+      - secret.env
+
+  ark-se:
+    container_name: ark-se
+    image: motey/arkserver
+    restart: unless-stopped
+    volumes:
+      - /home/littlediobolic/ark-se:/ark
+      - /home/littlediobolic/ark-cluster:/cluster
+    ports:
+      - 7779:7779
+      - 7779:7779/udp
+      - 7780:7780
+      - 7780:7780/udp
+      - 7781:7781
+      - 7781:7781/udp
+      - 27020-27024:27020-27024
+      - 27020-27024:27020-27024/udp
+      - 32331:32331
+    environment:
+      STEAMPORT: 7780
+      SERVERPORT: 27022
+      SESSIONNAME: stank-server-se
+      AUTOUPDATE: 120
+      AUTOBACKUP: 60
+      WARNMINUTE: 30
+      SERVERMAP: "ScorchedEarth_P"
+      BACKUPONSTOP: 1
+      WARNONSTOP: 1
+      TZ: America/New_York
+      NBPLAYERS: 12
+      BRANCH: "master"
+    env_file:
+      - secret.env

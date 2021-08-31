@@ -1,0 +1,21 @@
+version: "3.4"
+services:
+    gitea:
+      container_name: gitea
+      image: gitea/gitea
+      restart: unless-stopped
+      volumes:
+        - /home/littlediobolic/gitea/data:/data
+        - /mnt/Plex/gitea:/media
+      ports:
+        - 3000:3000
+        - "2222:22"
+      depends_on:
+        - git-db
+    git-db:
+      container_name: git-db
+      image: mariadb:10
+      env_file:
+        - gitdb-secret.env
+      volumes:
+        - /mnt/Plex/gitea-db:/var/lib/mysql

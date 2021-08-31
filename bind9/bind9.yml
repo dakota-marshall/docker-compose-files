@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+    bind9:
+      container_name: bind9
+      image: sameersbn/bind
+      restart: unless-stopped
+      volumes:
+        - /home/littlediobolic/bind9/data:/data
+      ports:
+        - 53:53
+        - 953:953/tcp
+        - 10000:10000/tcp
